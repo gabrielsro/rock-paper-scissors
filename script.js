@@ -1,75 +1,99 @@
-console.log(game());
-
 function getComputerChoice(){
     let options = ['Rock', 'Paper', 'Scissors'];
     let randomOption = Math.round((Math.random()*2));
     return options[randomOption];
 }
 
-function playRound(playerSelection, computerSelection){
-    let playerSelectionFormatted = playerSelection.toLowerCase();
-    let playerSelectionFinal = '';
-    if(playerSelectionFormatted[0] == 'r'){
-        playerSelectionFinal = 'Rock';
-    }
-    if(playerSelectionFormatted[0] == 'p'){
-        playerSelectionFinal = 'Paper';
-    }
-    if(playerSelectionFormatted[0] == 's'){
-        playerSelectionFinal = 'Scissors'
-    }
-
-    if(playerSelectionFinal === computerSelection){
-        //console.log(`It's a draw! both players chose ${computerSelection}!`);
-        return `It's a draw! both players chose ${computerSelection}`;
-    }
-
-    if(computerSelection == 'Rock' && playerSelectionFinal == 'Paper'){
-        //console.log(`You Win! ${playerSelectionFinal} beats ${computerSelection}`);
-        return `You Win! ${playerSelectionFinal} beats ${computerSelection}`;
-    }
-    if(computerSelection == 'Rock' && playerSelectionFinal == 'Scissors'){
-        //console.log(`You Lose! ${computerSelection} beats ${playerSelectionFinal}`);
-        return `You Lose! ${computerSelection} beats ${playerSelectionFinal}`;
-    }
-    if(computerSelection == 'Paper' && playerSelectionFinal == 'Scissors'){
-        //console.log(`You Win! ${playerSelectionFinal} beats ${computerSelection}`);
-        return `You Win! ${playerSelectionFinal} beats ${computerSelection}`;
-    }
-    if(computerSelection == 'Paper' && playerSelectionFinal == 'Rock'){
-        return `You Lose! ${computerSelection} beats ${playerSelectionFinal}`;
-    }
-    if(computerSelection == 'Scissors' && playerSelectionFinal == 'Paper'){
-        //console.log(`You Lose! ${computerSelection} beats ${playerSelectionFinal}`);
-        return `You Lose! ${computerSelection} beats ${playerSelectionFinal}`;
-    }
-    if(computerSelection == 'Scissors' && playerSelectionFinal == 'Rock'){
-        //console.log(`You Win! ${playerSelectionFinal} beats ${computerSelection}`);
-        return `You Win! ${playerSelectionFinal} beats ${computerSelection}`;
-    }
+let currentScore = {
+    computer: 0,
+    player: 0,
+    round: 1
 }
 
-function game(){
-    let computerScore = 0;
-    let playerScore = 0;
-    for(let i = 0; i < 5; i ++){
-        let move = window.prompt('Enter your move');
-        while(move.toLowerCase() !== 'rock' && move.toLowerCase() !== 'paper' && move.toLowerCase() !== 'scissors'){
-            move = window.prompt('Enter a valid move');
-        }
-        let result = playRound(move, getComputerChoice());
-        console.log(result);
-        if(result[4] == 'W'){
-            playerScore++;
-        }
-        if(result[4] == 'L'){
-            computerScore++;
+function handleOutcome(outcome){
+
+    let result = document.querySelector('#results');
+    let score = document.querySelector('#score');
+
+    if(outcome[4] == 'W'){
+        currentScore = {
+            computer: currentScore.computer,
+            player: currentScore.player += 1,
+            round: currentScore.round
         }
     }
-    if(computerScore > playerScore){
-        console.log(`You Lost! Computer ${computerScore}, You ${playerScore}`);
+    if(outcome[4] == 'L'){
+        currentScore = {
+            computer: currentScore.computer +=1,
+            player: currentScore.player,
+            round: currentScore.round
+        }
     }
     else{
-        console.log(`You Won! Computer ${computerScore}, You ${playerScore}`);
+        currentScore = {
+            computer: currentScore.computer,
+            player: currentScore.player,
+            round: currentScore.round
+        }
+    }
+
+    currentScore = {
+        computer: currentScore.computer,
+        player: currentScore.player,
+        round: currentScore.round +=1
+    };
+
+    if(currentScore.round > 5){
+        if(currentScore.computer < currentScore.player){
+            result.textContent = `Congratulations, you won!`;
+        }
+        if(currentScore.computer > currentScore.player){
+            result.textContent = `You Lost!`;
+        }
+        else{
+            result.textContent = `It's a Draw!`;
+        }
+        score.textContent = `Round: 5, Computer: ${currentScore.computer}, You: ${currentScore.player}`;
+        rock.setAttribute('disabled', true);
+        paper.setAttribute('disabled', true);
+        scissors.setAttribute('disabled', true);
+    }
+    else{
+        result.textContent = outcome;
+        score.textContent = `Next Round: ${currentScore.round}, Computer: ${currentScore.computer}, You: ${currentScore.player}`;
     }
 }
+
+function playRound(playerSelection){
+
+    let computerSelection = getComputerChoice();
+
+    if(playerSelection === computerSelection){
+        handleOutcome(`It's a draw! both players chose ${computerSelection}`);
+    }
+    if(computerSelection == 'Rock' && playerSelection == 'Paper'){
+        handleOutcome(`You Win! ${playerSelection} beats ${computerSelection}`);
+    }
+    if(computerSelection == 'Rock' && playerSelection == 'Scissors'){
+        handleOutcome(`You Lose! ${computerSelection} beats ${playerSelection}`);
+    }
+    if(computerSelection == 'Paper' && playerSelection == 'Scissors'){
+        handleOutcome(`You Win! ${playerSelection} beats ${computerSelection}`);
+    }
+    if(computerSelection == 'Paper' && playerSelection == 'Rock'){
+        handleOutcome(`You Lose! ${computerSelection} beats ${playerSelection}`);
+    }
+    if(computerSelection == 'Scissors' && playerSelection == 'Paper'){
+        handleOutcome(`You Lose! ${computerSelection} beats ${playerSelection}`);
+    }
+    if(computerSelection == 'Scissors' && playerSelection == 'Rock'){
+        handleOutcome(`You Win! ${playerSelection} beats ${computerSelection}`);
+    }
+}
+
+const rock = document.querySelector('.rock');
+rock.addEventListener('click', () => playRound('Rock'));
+const paper = document.querySelector('.paper');
+paper.addEventListener('click', () => playRound('Paper'));
+const scissors = document.querySelector('.scissors');
+scissors.addEventListener('click', () => playRound('Scissors'));
